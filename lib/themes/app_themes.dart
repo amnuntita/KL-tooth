@@ -1,4 +1,4 @@
-import 'package:khunlook/themes/vaccine_theme.dart';
+import 'vaccine_theme.dart';
 
 enum AppTheme {
   VaccineTheme,

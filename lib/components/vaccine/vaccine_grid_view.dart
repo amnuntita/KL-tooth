@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:khunlook/components/vaccine/vaccine_card.dart';
+import 'vaccine_card.dart';
 
 class VaccineGridView extends StatelessWidget {
   final List<int> items;
