@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "Dart-Code.flutter",
+    "Dart-Code.dart-code",
+    "BendixMa.dart-data-class-generator",
+    "luanpotter.dart-import",
+    "jeroen-meijer.pubspec-assist",
+    "Gruntfuggly.todo-tree",
+    "CoenraadS.bracket-pair-colorizer",
+    "esbenp.prettier-vscode"
+  ]
+}
