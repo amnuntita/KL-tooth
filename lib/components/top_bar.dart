@@ -10,11 +10,8 @@ class TopBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 18.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Container(
-              //TODO: add Icon Button change child
-              ),
           Row(
             children: <Widget>[
               Column(

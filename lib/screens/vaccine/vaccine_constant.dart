@@ -1,1 +1,0 @@
-library vaccine_constant;

@@ -12,7 +12,6 @@ final defaultThemeData = ThemeData(
     bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
     bodyText2: TextStyle(fontSize: 18.0),
   ).apply(
-    displayColor: Colors.black,
     fontFamily: 'Layiji',
     fontSizeDelta: 2.0,
   ),

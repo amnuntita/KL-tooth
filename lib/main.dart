@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
+import 'screens/initial_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
-import 'screens/vaccine/vaccine.dart';
 import 'themes/app_themes.dart';
 
+const String appTitle = 'Khunlook';
+
 void main() {
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider<ThemeProvider>(
-      create: (_) => ThemeProvider(appThemeData[AppTheme.VaccineTheme]),
-    ),
-  ], child: MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp();
+
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider(AppTheme.DefualtTheme),
+        ),
+      ],
+      child: const _Init(),
+    );
+  }
+}
 
+class _Init extends StatelessWidget {
+  const _Init();
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: true,
       debugShowMaterialGrid: false,
-      theme: theme.currentTheme,
+      theme: context.watch<ThemeProvider>().currentTheme,
       title: 'Khunlook',
-      initialRoute: 'vaccine',
+      initialRoute: '/',
       routes: {
-        'vaccine': (_) => VaccineView(),
+        '/': (_) => InitialScreen(appTitle: appTitle),
       },
     );
   }
