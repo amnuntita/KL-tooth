@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khunlook/screens/appointment/appointment_screen.dart';
 import 'screens/initial_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -32,15 +33,21 @@ class _Init extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      debugShowMaterialGrid: false,
-      theme: context.watch<ThemeProvider>().currentTheme,
-      title: 'Khunlook',
-      initialRoute: '/',
-      routes: {
-        '/': (_) => InitialScreen(appTitle: appTitle),
-      },
+    return Consumer<ThemeProvider>(
+      builder: (context, theme, _) => MaterialApp(
+        debugShowCheckedModeBanner: true,
+        debugShowMaterialGrid: false,
+        theme: theme.currentTheme,
+        title: 'Khunlook',
+        initialRoute: 'appointment',
+        routes: {
+          '': (_) => InitialScreen(appTitle: appTitle),
+          'appointment': (_) => Theme(
+                data: appThemeData[AppTheme.AppoimentTheme],
+                child: AppointmentScreen(),
+              ),
+        },
+      ),
     );
   }
 }
