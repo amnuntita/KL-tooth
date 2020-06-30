@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:provider/provider.dart';
+import 'package:khunlook/components/date_time_picker_form_field.dart';
+import 'package:khunlook/components/note_form_field.dart';
+import 'package:khunlook/components/text_form_field.dart';
+import 'package:khunlook/screens/appointment/widgets/event_card.dart';
 
 import '../../models/appointment/event_model.dart';
-import '../../providers/theme_provider.dart';
-import '../../themes/app_themes.dart';
 
 class AppointmentScreen extends StatefulWidget {
   @override
@@ -15,134 +17,82 @@ class AppointmentScreen extends StatefulWidget {
 class _AppointmentScreenState extends State<AppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  DateTime _currentDate = DateTime.now();
-  String _currentMonth = DateFormat.yMMMM().format(DateTime.now());
-  DateTime _targetDateTime = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
+  String _selectedMonth = DateFormat.yMMMM().format(DateTime.now());
   List<Event> _selectedDayEvents = [];
+  DateTime _targetDateTime = DateTime(2021, 5, 13);
   CalendarCarousel _calendarCorousel;
 
-  final formController = TextEditingController();
+  EventList<Event> _markedDateMap;
 
-  static Widget _eventIcon = Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(1000),
-      border: Border.all(color: Colors.blue, width: 2.0),
-    ),
-    child: Icon(
-      Icons.person,
-      color: Colors.amber,
-    ),
-  );
-
-  EventList<Event> _markedDateMap = EventList<Event>(
-    events: {
-      DateTime(2020, 6, 30): [
-        Event(
-          date: DateTime(2020, 6, 30, 12, 0),
-          title: 'Hello World Event 1',
-          icon: _eventIcon,
-          dot: Container(
-            margin: EdgeInsets.symmetric(horizontal: 1.0),
-            color: Colors.red,
-            height: 5.0,
-            width: 5.0,
+  @override
+  void initState() {
+    super.initState();
+    _markedDateMap = EventList<Event>(
+      events: {
+        DateTime(2020, 7, 3): [
+          Event(
+            date: DateTime(2020, 7, 3, 12, 0),
+            title: 'Hello World Event 1',
           ),
-        ),
-        Event(
-          date: DateTime(2020, 6, 30, 17, 30),
-          title: 'Event 2',
-          icon: _eventIcon,
-        ),
-        Event(
-          date: DateTime(2020, 6, 30, 19, 45),
-          title: 'Event 3',
-          icon: _eventIcon,
-        ),
-      ],
-    },
-  );
-
-  Widget _buildEventCard(BuildContext context, Event event) {
-    return GestureDetector(
-      onTap: () async {
-        await _showEditDialog(
-          context: context,
-          event: event,
-        );
+          Event(
+            date: DateTime(2020, 7, 3, 17, 30),
+            title: 'Event 2',
+          ),
+          Event(
+            date: DateTime(2020, 7, 3, 19, 45),
+            title: 'Event 3',
+          ),
+        ],
       },
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            '${event?.title}\n'
-            'วันที่ ${DateFormat.yMMMMEEEEd().format(event?.date).toString()}\n'
-            'นัดหมาย ${event?.note ?? ""}\n'
-            'เวลา ${DateFormat.Hm().format(event?.date).toString()}\n'
-            'สถานที่ ${event?.location ?? ""}',
-            softWrap: true,
-            style: Theme.of(context).textTheme.bodyText2.copyWith(height: 1.0),
-          ),
-        ),
-      ),
     );
   }
 
   Future _showEditDialog({BuildContext context, Event event}) {
+    final format = DateFormat('EEEE, MMMM d, y HH:mm');
+
     return showDialog(
       context: context,
-      // barrierDismissible: false,
       useRootNavigator: true,
       builder: (context) {
         return Dialog(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 600.0),
-            child: Container(
-              child: Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+            child: GestureDetector(
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+
+                if (currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+              },
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _formKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        ...[
-                          {'label': 'Event Title', 'value': event.title},
-                          {'label': 'Note', 'value': event.note},
-                          {'label': 'Location', 'value': event.location},
-                        ]
-                            .map(
-                              (item) => Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(item['label'] ?? 'Loading...',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline1),
-                                  TextFormField(
-                                    initialValue: item['value'] ?? '',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        .apply(fontSizeDelta: 8.0),
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8.0),
-                                ],
-                              ),
-                            )
-                            .toList(),
-                        ...[].map(
-                          (item) => Column(
-                            children: <Widget>[
-                              Text('Label',
-                                  style: Theme.of(context).textTheme.headline1),
-                            ],
-                          ),
+                        AppTextFormField(
+                          label: 'ชื่อการนัดหมาย',
+                          initialValue: event?.title ?? 'Untitle',
+                        ),
+                        AppNoteFormField(
+                          label: 'บันทึก',
+                          initialValue: event?.note ?? '',
+                        ),
+                        AppTextFormField(
+                          label: 'สถานที่นัดหมาย',
+                          initialValue: event?.location ?? '',
+                        ),
+                        AppDateTimePickerFormField(
+                          label: 'Start Date',
+                          format: format,
+                        ),
+                        AppDateTimePickerFormField(
+                          label: 'End Date',
+                          format: format,
                         ),
                         Row(
                           children: <Widget>[
@@ -164,19 +114,23 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             RaisedButton(
-                              onPressed: () {},
-                              color: Colors.green[400],
-                              child: Text('Save'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              color: Colors.red[400],
+                              child: Text('Cancel'),
                             ),
                             SizedBox(
                               width: 24.0,
                             ),
                             RaisedButton(
                               onPressed: () {
-                                Navigator.of(context).pop();
+                                setState(() {
+                                  _formKey.currentState.reset();
+                                });
                               },
-                              color: Colors.red[400],
-                              child: Text('Cancel'),
+                              color: Colors.green[400],
+                              child: Text('Save'),
                             ),
                           ],
                         )
@@ -194,32 +148,71 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var themeProvider = context.watch<ThemeProvider>();
+    final calendarHeight = MediaQuery.of(context).size.width; // 1 : 1
 
     _calendarCorousel = CalendarCarousel<Event>(
+      pageScrollPhysics: ScrollPhysics(),
       onDayPressed: (DateTime date, List<Event> events) {
-        print('day was press');
         setState(() {
-          _currentDate = date;
+          _selectedDate = date;
           _selectedDayEvents = events;
         });
       },
-      height: 400.0,
+      onDayLongPressed: (_) {
+        // do nothing...
+      },
+      headerTextStyle:
+          Theme.of(context).textTheme.headline1.apply(fontSizeDelta: 2.0),
+      headerTitleTouchable: true,
+      onHeaderTitlePressed: () async {
+        DateTime selected = await DatePicker.showDatePicker(
+          context,
+          showTitleActions: true,
+          currentTime: _selectedDate,
+          locale: LocaleType.th,
+        );
+        if (selected != null) {
+          setState(() {
+            _selectedDate = selected;
+            _selectedDayEvents = _markedDateMap.getEvents(selected);
+          });
+        }
+      },
+      leftButtonIcon: Icon(
+        Icons.arrow_back_ios,
+        color: Theme.of(context).primaryColorDark,
+      ),
+      rightButtonIcon: Icon(
+        Icons.arrow_forward_ios,
+        color: Theme.of(context).primaryColorDark,
+      ),
       customGridViewPhysics: NeverScrollableScrollPhysics(),
-      selectedDateTime: _currentDate,
+      selectedDateTime: _selectedDate,
+      selectedDayButtonColor: Colors.orange[400],
       markedDatesMap: _markedDateMap,
-      markedDateShowIcon: true,
-      markedDateIconMaxShown: 2,
-      markedDateIconBuilder: (event) => event.icon,
-      minSelectedDate: _currentDate.subtract(Duration(days: 360)),
-      maxSelectedDate: _currentDate.add(Duration(days: 360)),
-      daysHaveCircularBorder: true,
+      markedDateCustomTextStyle: Theme.of(context).textTheme.bodyText1,
+      markedDateMoreShowTotal: true,
+      markedDateWidget: Container(
+        margin: EdgeInsets.symmetric(horizontal: 1.0),
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          borderRadius: BorderRadius.circular(1000),
+        ),
+        height: 4.0,
+        width: 4.0,
+      ),
+      todayButtonColor: Colors.green[400],
+      todayTextStyle:
+          Theme.of(context).textTheme.bodyText2.apply(color: Colors.white),
+      minSelectedDate: _selectedDate.subtract(Duration(days: 360)),
+      maxSelectedDate: _selectedDate.add(Duration(days: 360)),
       onCalendarChanged: (DateTime date) {
         this.setState(() {
           _targetDateTime = date;
-          // _currentMonth = DateFormat.yMMM().format(_targetDateTime);
+          _selectedMonth = DateFormat.yMMM().format(_targetDateTime);
         });
       },
+      locale: 'th',
     );
 
     return Scaffold(
@@ -230,40 +223,57 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Container(child: _calendarCorousel),
-              if (_selectedDayEvents.isNotEmpty)
-                Expanded(
-                  child: Container(
-                    child: ListView.builder(
-                      itemCount: _selectedDayEvents.length,
-                      itemBuilder: (context, index) => ListTile(
-                        title: ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: 200.0),
-                          child: _buildEventCard(
-                            context,
-                            _selectedDayEvents[index],
+              ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: calendarHeight,
+                  ),
+                  child: Container(child: _calendarCorousel)),
+              Expanded(
+                child: _selectedDayEvents.isNotEmpty
+                    ? Container(
+                        child: ListView.builder(
+                          itemCount: _selectedDayEvents.length,
+                          itemBuilder: (context, index) => ListTile(
+                            onTap: () async {
+                              await _showEditDialog(
+                                context: context,
+                                event: _selectedDayEvents[index],
+                              );
+                            },
+                            dense: true,
+                            title: ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: 200.0),
+                              child: EventCard(
+                                event: _selectedDayEvents[index],
+                              ),
+                            ),
                           ),
                         ),
+                      )
+                    : Center(
+                        child: Text(
+                          'No Event',
+                          style: Theme.of(context).textTheme.headline1,
+                        ),
                       ),
-                    ),
-                  ),
-                )
+              )
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          themeProvider.setTheme(AppTheme.AppoimentTheme);
-        },
+        onPressed: () {},
         elevation: 2.0,
         tooltip: 'add event',
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).iconTheme.color,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.04,
+          height: kBottomNavigationBarHeight,
         ),
         shape: CircularNotchedRectangle(),
         color: Theme.of(context).primaryColor,

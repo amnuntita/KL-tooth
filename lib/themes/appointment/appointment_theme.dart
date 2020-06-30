@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
 final Color primaryColor = Color(0xFFEBF2DE);
-final Color accentColor = Color(0xFFFFFFFF);
+final Color primaryColorDark = Color(0xffb9bfac);
+final Color primaryColorLight = Color(0xFFFFFFFF);
 
 final appointmentThemeData = ThemeData(
   primaryColor: primaryColor,
-  accentColor: accentColor,
+  primaryColorDark: primaryColorDark,
+  primaryColorLight: primaryColorLight,
   floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: accentColor,
+    backgroundColor: primaryColorLight,
   ),
+  iconTheme: IconThemeData(
+    color: Colors.black,
+  ),
+  dialogTheme: DialogTheme(),
   fontFamily: 'Layiji',
   textTheme: TextTheme(
     headline1: TextStyle(fontSize: 24.0),
@@ -20,7 +26,9 @@ final appointmentThemeData = ThemeData(
     bodyText1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
     bodyText2: TextStyle(fontSize: 18.0),
   ).apply(
+    bodyColor: Colors.black,
+    displayColor: Colors.black,
     fontFamily: 'Layiji',
-    fontSizeDelta: 2.0,
+    fontSizeDelta: 4.0,
   ),
 );
