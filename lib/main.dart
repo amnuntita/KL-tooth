@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khunlook/screens/appointment/appointment_screen.dart';
 import 'screens/initial_screen.dart';
+import 'package:khunlook/screens/tooth/tooth.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
@@ -39,13 +40,14 @@ class _Init extends StatelessWidget {
         debugShowMaterialGrid: false,
         theme: theme.currentTheme,
         title: 'Khunlook',
-        initialRoute: 'appointment',
+        initialRoute: 'tooth',
         routes: {
           '': (_) => InitialScreen(appTitle: appTitle),
           'appointment': (_) => Theme(
                 data: appThemeData[AppTheme.AppoimentTheme],
                 child: AppointmentScreen(),
               ),
+          'tooth': (_) => Tooth(),
         },
       ),
     );
