@@ -7,21 +7,27 @@ import './picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import './tooth_card.dart';
 
-class ToothDialog extends StatefulWidget {
+class EditToothDialog extends StatefulWidget {
   final String toothName;
+  final String date;
+  final String event;
   final Function(int) onChange;
   final Function(List<String>) onCardChange;
-  const ToothDialog(
-      {Key key, @required this.toothName, this.onChange, this.onCardChange})
+  const EditToothDialog(
+      {Key key,
+      @required this.toothName,
+      @required this.date,
+      @required this.event,
+      this.onChange,
+      this.onCardChange})
       : super(key: key);
   @override
-  _ToothDialogState createState() => _ToothDialogState();
+  _EditToothDialogState createState() => _EditToothDialogState();
 }
 
-class _ToothDialogState extends State<ToothDialog> {
-  DateTime initDate = DateTime.now();
-  String select = 'ฟันขึ้น';
-  List<Widget> eventList = [];
+class _EditToothDialogState extends State<EditToothDialog> {
+  String initDate;
+  String select;
 
   @override
   Widget build(BuildContext context) {
@@ -50,42 +56,25 @@ class _ToothDialogState extends State<ToothDialog> {
                 ),
               ),
             ),
-            Row(
-              children: <Widget>[
-                Text(
-                  'เพิ่มข้อมูลฟัน ${this.widget.toothName}',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline1
-                      .copyWith(color: Theme.of(context).accentColor),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    CircleAvatar(
-                      radius: 15.0,
-                    )
-                  ],
-                )
-              ],
+            Text(
+              'แก้ไขข้อมูลฟัน ${this.widget.toothName}',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline1
+                  .copyWith(color: Theme.of(context).accentColor),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   AppDateTimePickerFormField(
                     label: 'วันที่ *',
-                    initialValue:
-                        DateFormat.yMMMd('th_TH').format(initDate).toString(),
+                    initialValue: initDate ?? this.widget.date,
                     format: DateFormat.yMMMd('th_TH'),
                     onDateChange: (DateTime date) {
                       setState(() {
-                        initDate = date;
+                        initDate =
+                            DateFormat.yMMMd('th_TH').format(date).toString();
                       });
                     },
                   ),
@@ -96,11 +85,11 @@ class _ToothDialogState extends State<ToothDialog> {
                 children: <Widget>[
                   PickerFormField(
                     label: 'เหตุการณ์ *',
-                    initialValue: select,
+                    initialValue: select ?? this.widget.event,
                     picker: Picker(
                       title: 'เหตุการณ์ *',
                       choices: teethEvent,
-                      h: 250,
+                      h: 200,
                       onChange: (String val) {
                         setState(() {
                           print(val);
@@ -125,24 +114,17 @@ class _ToothDialogState extends State<ToothDialog> {
                   width: 90,
                   height: 25,
                   child: FlatButton(
-                      color: Theme.of(context).primaryColorLight,
+                      color: Color(0xFFC8DEFF),
                       textColor: Colors.white,
                       onPressed: () {
-                        setState(() {
-                          eventList.add(ToothCard(
-                              this.widget.toothName,
-                              DateFormat.yMMMd('th_TH')
-                                  .format(initDate)
-                                  .toString(),
-                              select));
-                          this.widget.onChange(teethEvent.indexOf(select));
-                        });
+                        //print(initDate);
+                        this.widget.onCardChange([initDate, select]);
+                        Navigator.of(context).pop();
                       },
                       child: Text('บันทึก')),
                 ),
               ],
             ),
-            SingleChildScrollView(child: Column(children: eventList))
           ],
         ),
       ),

@@ -17,6 +17,9 @@ class PickerFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _controller =
+        TextEditingController(text: initialValue);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -34,19 +37,26 @@ class PickerFormField extends StatelessWidget {
                     .copyWith(color: Colors.black),
               ),
             ),
-            InkResponse(
-              onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return picker;
-                    });
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(vertical: 5.0),
-                color: Colors.grey[100],
-                width: 200,
-                height: 20.0,
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 5.0),
+              color: Colors.grey[100],
+              width: 200,
+              height: 20.0,
+              child: TextFormField(
+                controller: _controller,
+                readOnly: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  border: InputBorder.none,
+                ),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return picker;
+                      });
+                },
               ),
             ),
           ],

@@ -4,18 +4,22 @@ import 'package:intl/intl.dart' show DateFormat;
 
 class AppDateTimePickerFormField extends StatelessWidget {
   final String label;
-  final DateTime initialValue;
+  final String initialValue;
   final DateFormat format;
+  final Function(DateTime) onDateChange;
 
-  const AppDateTimePickerFormField({
-    Key key,
-    @required this.label,
-    @required this.format,
-    this.initialValue,
-  }) : super(key: key);
-
+  const AppDateTimePickerFormField(
+      {Key key,
+      @required this.label,
+      @required this.format,
+      this.initialValue,
+      this.onDateChange})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
+    TextEditingController myController = TextEditingController();
+    myController.text = initialValue;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -38,18 +42,16 @@ class AppDateTimePickerFormField extends StatelessWidget {
               width: 200,
               height: 20.0,
               child: TextFormField(
+                controller: myController,
                 readOnly: true,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.grey[300],
+                  fillColor: Colors.grey[100],
                   border: InputBorder.none,
                 ),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText2
-                    .apply(fontSizeDelta: 2.0),
-                initialValue:
-                    format.format(initialValue ?? DateTime.now()).toString(),
+                style: Theme.of(context).textTheme.bodyText1,
+                /*initialValue:
+                    format.format(initialValue ?? DateTime.now()).toString(),*/
                 onTap: () async {
                   DateTime date = await DatePicker.showDatePicker(
                     context,
@@ -61,12 +63,10 @@ class AppDateTimePickerFormField extends StatelessWidget {
                           ),
                       itemStyle: Theme.of(context)
                           .textTheme
-                          .bodyText2
-                          .apply(fontSizeDelta: 8.0),
+                          .bodyText1
+                          .apply(fontSizeDelta: 5.0),
                     ),
-                    onConfirm: (date) {
-                      print(date);
-                    },
+                    onConfirm: (date) => onDateChange(date),
                     currentTime: DateTime.now(),
                     locale: LocaleType.th,
                   );

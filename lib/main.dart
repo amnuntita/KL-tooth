@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khunlook/screens/appointment/appointment_screen.dart';
 import 'screens/initial_screen.dart';
 import 'package:khunlook/screens/tooth/tooth.dart';
+import 'package:khunlook/screens/tooth/widgets/info.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
@@ -47,7 +48,12 @@ class _Init extends StatelessWidget {
                 data: appThemeData[AppTheme.AppoimentTheme],
                 child: AppointmentScreen(),
               ),
-          'tooth': (_) => Tooth(),
+          'tooth': (_) =>
+              Theme(data: appThemeData[AppTheme.ToothTheme], child: Tooth()),
+          'info': (_) => Theme(
+                data: appThemeData[AppTheme.ToothTheme],
+                child: Info(),
+              )
         },
       ),
     );
